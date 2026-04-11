@@ -1,0 +1,9 @@
+# install dependencies from PyPI
+fastapi[all]==0.135.3
+scikit-learn==1.8.0
+pandas==3.0.2
+numpy==2.4.4
+joblib==1.5.3
+
+# install dependencies from local files
+# pip install -r requirements.txt
