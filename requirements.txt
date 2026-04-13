@@ -8,6 +8,7 @@ matplotlib==3.10.8
 seaborn==0.13.2
 scipy==1.17.1
 pydantic-settings==2.13.1
+scalar-fastapi==1.8.2
 
 # install dependencies from local files
 # pip install -r requirements.txt
