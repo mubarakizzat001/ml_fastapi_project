@@ -24,6 +24,7 @@
 - [Model Details](#-model-details)
 - [API Endpoints](#-api-endpoints)
 - [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
@@ -31,14 +32,14 @@
 
 **Risk Flag ML Model** is an end-to-end machine learning project that predicts whether a given record carries a financial/operational risk (`Risk_Flag = 1`) or not (`Risk_Flag = 0`).
 
-The project follows a clean ML workflow:
+The project follows a clean, layered ML workflow:
 
 1. **EDA & Experimentation** — Exploratory data analysis inside a Jupyter notebook
 2. **Training** — A full Scikit-learn `Pipeline` handles preprocessing + Logistic Regression training
 3. **Persistence** — Trained model is serialized with `joblib`
-4. **Serving** — FastAPI exposes the trained model as a REST API
+4. **Serving** — FastAPI exposes the trained model as a REST API via a dedicated `service` layer
 
-> ⚡ The entire preprocessing + model inference is wrapped in a single Scikit-learn `Pipeline`, so no data transformation is needed at inference time.
+> ⚡ Preprocessing + model inference are wrapped in a single Scikit-learn `Pipeline` — no manual data transformation is needed at inference time.
 
 ---
 
@@ -47,9 +48,14 @@ The project follows a clean ML workflow:
 ```
 ml-fastapi-project/
 │
-├── main.py                          # Entry point — loads model & runs test inference
+├── main.py                          # FastAPI entry point — defines all API routes
 ├── requirements.txt                 # Python dependencies
 ├── .env.example                     # Environment variable template
+│
+├── service/                         # Service layer (business logic)
+│   ├── __init__.py
+│   ├── BaseModel.py                 # Loads the trained model from disk (joblib)
+│   └── ModelService.py              # Handles prediction logic (predict + probability)
 │
 └── ml_model_package/
     ├── data/
@@ -57,7 +63,7 @@ ml-fastapi-project/
     │   └── Test Data.csv            # Raw test dataset
     │
     ├── models/
-    │   └── risk_flag_model.joblib   # Serialized trained model (pipeline)
+    │   └── risk_flag_model.joblib   # Serialized trained model (Scikit-learn Pipeline)
     │
     └── notebooks/
         └── research_and_development.ipynb   # Full ML workflow: EDA → Training → Evaluation → Export
@@ -70,12 +76,14 @@ ml-fastapi-project/
 | Layer | Tool | Version |
 |---|---|---|
 | API Framework | FastAPI | 0.135.3 |
+| API Docs UI | Scalar FastAPI | 1.8.2 |
 | ML Library | Scikit-learn | 1.8.0 |
 | Data Processing | Pandas | 3.0.2 |
 | Numerical Computing | NumPy | 2.4.4 |
 | Model Persistence | Joblib | 1.5.3 |
 | Data Validation | Pydantic Settings | 2.13.1 |
-| Visualization | Matplotlib + Seaborn | Latest |
+| Visualization (notebook) | Matplotlib + Seaborn | 3.10 / 0.13 |
+| Statistical Analysis | SciPy | 1.17.1 |
 
 ---
 
@@ -122,7 +130,7 @@ cp .env.example .env
 
 ## 💡 Usage
 
-### Option A — Train the model (run the notebook)
+### Step 1 — Train the model (run the notebook)
 
 Open the notebook and run all cells:
 
@@ -132,31 +140,20 @@ jupyter notebook ml_model_package/notebooks/research_and_development.ipynb
 
 This will:
 - Load `Training Data.csv`
-- Perform quick EDA (missing values, distributions, correlations)
+- Perform EDA (missing values, distributions, correlations)
 - Build and train a Scikit-learn pipeline (preprocessing + Logistic Regression)
 - Evaluate performance (Classification Report, Confusion Matrix, ROC AUC)
 - Serialize the trained model to `ml_model_package/models/risk_flag_model.joblib`
 
-### Option B — Run a quick inference test
+> ⚠️ The API **will not start** if `risk_flag_model.joblib` doesn't exist. You must run the notebook first.
 
-After training the model, run:
-
-```bash
-python main.py
-```
-
-This will load the saved model, pick one sample from `Test Data.csv`, and print:
-- Sample input features
-- Predicted label (`0` or `1`)
-- Predicted probability
-
-### Option C — Start the FastAPI server
+### Step 2 — Start the FastAPI server
 
 ```bash
 fastapi dev main.py
 ```
 
-Visit the interactive docs at: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+The server will start on `http://127.0.0.1:8000`.
 
 ---
 
@@ -172,24 +169,45 @@ Visit the interactive docs at: [http://127.0.0.1:8000/docs](http://127.0.0.1:800
 | Random State | 42 |
 | Serialization | `joblib` |
 
-The entire preprocessing + model is wrapped in a single Scikit-learn `Pipeline`, meaning you can call `.predict()` directly on raw input DataFrames without any manual transformation.
+The entire preprocessing + model is wrapped in a single Scikit-learn `Pipeline`, so you can call `.predict()` directly on raw input DataFrames — no manual transformation needed.
 
 ---
 
 ## 🌐 API Endpoints
 
-> API route definitions are in `main.py` / FastAPI router.
-
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/` | Health check |
+| `GET` | `/` | Health check — returns welcome message |
 | `POST` | `/predict` | Run risk prediction on input features |
+| `GET` | `/scalar` | Scalar interactive API documentation UI |
 
-Once the server is running, explore the full interactive API documentation at:
+### Example: POST `/predict`
+
+**Request body:**
+```json
+{
+  "feature_1": value,
+  "feature_2": value,
+  "...": "..."
+}
+```
+
+**Response:**
+```json
+{
+  "Prediction:": 1,
+  "Probability:": 0.87
+}
+```
+
+### Interactive API Documentation
+
+Once the server is running, explore the full docs at:
 
 ```
 http://127.0.0.1:8000/docs      ← Swagger UI
 http://127.0.0.1:8000/redoc     ← ReDoc
+http://127.0.0.1:8000/scalar    ← Scalar (modern API docs)
 ```
 
 ---
@@ -213,5 +231,5 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 ---
 
 <div align="center">
-Made with ❤️ by <a href="https://github.com/your-username">Mubarak</a>
+Made with ❤️ by <a href="https://github.com/mubarakizzat001">Mubarak</a>
 </div>
