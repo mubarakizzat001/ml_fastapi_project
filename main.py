@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from service.ModelService import ModelService
 from scalar_fastapi import get_scalar_api_reference
+from api import FinanceAppSchema
 
 
 app = FastAPI()
@@ -11,7 +12,7 @@ def read_root():
     return {"message": "Welcome to the ML Model API!"}
 
 @app.post("/predict")
-def predict(data: dict):
+def predict(data: FinanceAppSchema):
     return model_service.predict(data)
 
 @app.get("/scalar",include_in_schema=False)

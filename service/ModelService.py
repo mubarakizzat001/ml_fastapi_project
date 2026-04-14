@@ -1,6 +1,7 @@
 
 import pandas as pd
 from service.BaseModel import BaseModel
+from api.schemas.FinanceAppSchema import FinanceAppSchema
 
 
 
@@ -8,8 +9,9 @@ class ModelService(BaseModel):
     def __init__(self):
         super().__init__()
 
-    def predict(self, data: dict):
+    def predict(self, app: FinanceAppSchema):
         model = self.model
+        data = app.model_dump()
         df = pd.DataFrame([data])
   
         pred = model.predict(df)

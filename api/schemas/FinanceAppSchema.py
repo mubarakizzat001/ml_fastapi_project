@@ -10,7 +10,7 @@ class FinanceAppSchema(BaseModel):
     Income: float = Field(..., gt=0)
     Age: int = Field(..., ge=18, le=100)
     Experience: int
-    marital_status: maritalstatus = Field(..., alias="Married/Single")
+    marital_status: maritalstatus
     House_Ownership: HouseOwnership
     Car_Ownership: str
     Profession: str
