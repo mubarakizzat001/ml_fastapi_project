@@ -1,45 +1,30 @@
-<div align="center">
+# 💳 ML Finance Risk API
 
-# 🤖 Risk Flag ML Model
-
-### A Machine Learning pipeline for binary risk classification, built with Scikit-learn & served via FastAPI
-
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.8-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Pandas](https://img.shields.io/badge/Pandas-3.0-150458?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-
-</div>
+A production-ready **FastAPI** backend that predicts loan risk using a trained **Machine Learning** model. The API accepts user financial data, runs it through an ML classifier, stores the prediction in a **PostgreSQL** database, and returns the result with probability scores.
 
 ---
 
-## 📋 Table of Contents
+## 🚀 Features
 
-- [Overview](#-overview)
-- [Project Structure](#-project-structure)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-- [Usage](#-usage)
-- [Model Details](#-model-details)
-- [API Endpoints](#-api-endpoints)
-- [Contributing](#-contributing)
-- [License](#-license)
+- 🤖 **ML-Powered Predictions** — Classifies loan risk using a pre-trained scikit-learn model
+- 📊 **Probability Scores** — Returns confidence probability alongside the binary prediction
+- 🗄️ **Async PostgreSQL** — Fully async database operations via SQLAlchemy + asyncpg
+- ✅ **Data Validation** — Strict input validation with Pydantic schemas
+- 📖 **Scalar API Docs** — Beautiful interactive API documentation at `/scalar`
+- ⚡ **FastAPI** — High-performance async web framework
 
 ---
 
-## 🔍 Overview
+## 🛠️ Tech Stack
 
-**Risk Flag ML Model** is an end-to-end machine learning project that predicts whether a given record carries a financial/operational risk (`Risk_Flag = 1`) or not (`Risk_Flag = 0`).
-
-The project follows a clean, layered ML workflow:
-
-1. **EDA & Experimentation** — Exploratory data analysis inside a Jupyter notebook
-2. **Training** — A full Scikit-learn `Pipeline` handles preprocessing + Logistic Regression training
-3. **Persistence** — Trained model is serialized with `joblib`
-4. **Serving** — FastAPI exposes the trained model as a REST API via a dedicated `service` layer
-
-> ⚡ Preprocessing + model inference are wrapped in a single Scikit-learn `Pipeline` — no manual data transformation is needed at inference time.
+| Layer | Technology |
+|---|---|
+| Framework | FastAPI 0.135 |
+| Database | PostgreSQL (async via asyncpg) |
+| ORM | SQLModel + SQLAlchemy 2.0 |
+| ML | scikit-learn, pandas, numpy |
+| Validation | Pydantic v2 + pydantic-settings |
+| API Docs | Scalar FastAPI |
 
 ---
 
@@ -47,189 +32,211 @@ The project follows a clean, layered ML workflow:
 
 ```
 ml-fastapi-project/
-│
-├── main.py                          # FastAPI entry point — defines all API routes
-├── requirements.txt                 # Python dependencies
-├── .env.example                     # Environment variable template
-│
-├── service/                         # Service layer (business logic)
-│   ├── __init__.py
-│   ├── BaseModel.py                 # Loads the trained model from disk (joblib)
-│   └── ModelService.py              # Handles prediction logic (predict + probability)
-│
-└── ml_model_package/
-    ├── data/
-    │   ├── Training Data.csv        # Raw training dataset
-    │   └── Test Data.csv            # Raw test dataset
-    │
-    ├── models/
-    │   └── risk_flag_model.joblib   # Serialized trained model (Scikit-learn Pipeline)
-    │
-    └── notebooks/
-        └── research_and_development.ipynb   # Full ML workflow: EDA → Training → Evaluation → Export
+├── src/
+│   ├── main.py                        # App entry point, lifespan, Scalar docs
+│   ├── config.py                      # Database settings from .env
+│   ├── requirements.txt
+│   ├── .env                           # Environment variables (not committed)
+│   │
+│   ├── api/
+│   │   ├── __init__.py                # Exports schemas, enums, router
+│   │   ├── dependencies.py            # Service dependency injection
+│   │   ├── router/
+│   │   │   └── FinanceAppRouter.py    # CRUD endpoints
+│   │   └── schemas/
+│   │       ├── FinanceAppSchema.py    # Request/Response Pydantic models
+│   │       └── enum/
+│   │           └── FinanceAppEnum.py  # maritalstatus, HouseOwnership enums
+│   │
+│   ├── database/
+│   │   ├── model.py                   # FinanceApp SQLModel table
+│   │   └── seesion.py                 # Async engine, session factory
+│   │
+│   ├── service/
+│   │   ├── FinanceappService.py       # Business logic (CRUD + ML integration)
+│   │   └── ModelService.py            # ML model loading and prediction
+│   │
+│   └── ml_model_package/
+│       ├── data/                      # Training datasets
+│       ├── models/                    # Saved model files (.joblib)
+│       └── notebooks/                 # Jupyter notebooks for model training
 ```
 
 ---
 
-## 🛠 Tech Stack
+## ⚙️ Setup & Installation
 
-| Layer | Tool | Version |
-|---|---|---|
-| API Framework | FastAPI | 0.135.3 |
-| API Docs UI | Scalar FastAPI | 1.8.2 |
-| ML Library | Scikit-learn | 1.8.0 |
-| Data Processing | Pandas | 3.0.2 |
-| Numerical Computing | NumPy | 2.4.4 |
-| Model Persistence | Joblib | 1.5.3 |
-| Data Validation | Pydantic Settings | 2.13.1 |
-| Visualization (notebook) | Matplotlib + Seaborn | 3.10 / 0.13 |
-| Statistical Analysis | SciPy | 1.17.1 |
+### 1. Prerequisites
 
----
+- Python 3.11+
+- PostgreSQL running locally
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python **3.10+**
-- `pip` or a virtual environment manager
-
-### 1. Clone the repository
+### 2. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/ml-fastapi-project.git
+git clone <your-repo-url>
 cd ml-fastapi-project
 ```
 
-### 2. Create & activate a virtual environment
+### 3. Create and activate virtual environment
 
 ```bash
 python -m venv venv
-
-# Linux / macOS
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
+source venv/bin/activate        # Linux/macOS
+# venv\Scripts\activate         # Windows
 ```
 
-### 3. Install dependencies
+### 4. Install dependencies
 
 ```bash
+cd src
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment variables
+### 5. Configure environment variables
+
+Create a `.env` file inside `src/` based on the example:
 
 ```bash
 cp .env.example .env
-# Edit .env as needed
 ```
+
+Edit `.env` with your PostgreSQL credentials:
+
+```env
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+### 6. Run the development server
+
+```bash
+cd src
+fastapi dev
+```
+
+> The API will be available at: `http://localhost:8000`
 
 ---
 
-## 💡 Usage
+## 📖 API Documentation
 
-### Step 1 — Train the model (run the notebook)
-
-Open the notebook and run all cells:
-
-```bash
-jupyter notebook ml_model_package/notebooks/research_and_development.ipynb
-```
-
-This will:
-- Load `Training Data.csv`
-- Perform EDA (missing values, distributions, correlations)
-- Build and train a Scikit-learn pipeline (preprocessing + Logistic Regression)
-- Evaluate performance (Classification Report, Confusion Matrix, ROC AUC)
-- Serialize the trained model to `ml_model_package/models/risk_flag_model.joblib`
-
-> ⚠️ The API **will not start** if `risk_flag_model.joblib` doesn't exist. You must run the notebook first.
-
-### Step 2 — Start the FastAPI server
-
-```bash
-fastapi dev main.py
-```
-
-The server will start on `http://127.0.0.1:8000`.
-
----
-
-## 🧠 Model Details
-
-| Property | Value |
+| URL | Description |
 |---|---|
-| Algorithm | Logistic Regression |
-| Class Weighting | `balanced` (handles class imbalance) |
-| Numeric Preprocessing | Median Imputation → Standard Scaling |
-| Categorical Preprocessing | Most-Frequent Imputation → One-Hot Encoding |
-| Train/Test Split | 80% / 20% (stratified) |
-| Random State | 42 |
-| Serialization | `joblib` |
-
-The entire preprocessing + model is wrapped in a single Scikit-learn `Pipeline`, so you can call `.predict()` directly on raw input DataFrames — no manual transformation needed.
+| `http://localhost:8000/scalar` | Scalar interactive API docs (recommended) |
+| `http://localhost:8000/docs` | Swagger UI |
+| `http://localhost:8000/redoc` | ReDoc |
 
 ---
 
-## 🌐 API Endpoints
+## 🔌 API Endpoints
+
+### Base URL: `/financeapp`
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/` | Health check — returns welcome message |
-| `POST` | `/predict` | Run risk prediction on input features |
-| `GET` | `/scalar` | Scalar interactive API documentation UI |
+| `POST` | `/financeapp/` | Create a prediction & save to DB |
+| `GET` | `/financeapp/{id}` | Get a single record by ID |
+| `GET` | `/financeapp/?limit=100&offset=0` | Get all records (paginated) |
+| `PATCH` | `/financeapp/{id}` | Update a record |
+| `DELETE` | `/financeapp/{id}` | Delete a record |
 
-### Example: POST `/predict`
+---
 
-**Request body:**
+### 📥 POST `/financeapp/` — Create Prediction
+
+**Request Body:**
+
 ```json
 {
-  "feature_1": value,
-  "feature_2": value,
-  "...": "..."
+  "Income": 50000.0,
+  "Age": 35,
+  "Experience": 10,
+  "marital_status": "Married",
+  "House_Ownership": "rented",
+  "Car_Ownership": "yes",
+  "Profession": "Engineer",
+  "CITY": "Cairo",
+  "STATE": "Cairo",
+  "CURRENT_JOB_YRS": 5,
+  "CURRENT_HOUSE_YRS": 3
 }
 ```
 
-**Response:**
+**Field Constraints:**
+
+| Field | Type | Constraints |
+|---|---|---|
+| `Income` | float | `> 0` |
+| `Age` | int | `18 – 100` |
+| `Experience` | int | — |
+| `marital_status` | enum | `"Married"` \| `"Single"` |
+| `House_Ownership` | enum | `"rented"` \| `"owned"` \| `"norent_noown"` |
+| `Car_Ownership` | str | — |
+| `Profession` | str | — |
+| `CITY` | str | — |
+| `STATE` | str | — |
+| `CURRENT_JOB_YRS` | int | — |
+| `CURRENT_HOUSE_YRS` | int | — |
+
+**Response (201 Created):**
+
 ```json
 {
-  "Prediction:": 1,
-  "Probability:": 0.87
+  "Id": 1,
+  "prediction": 1,
+  "probability": 0.59
 }
 ```
 
-### Interactive API Documentation
-
-Once the server is running, explore the full docs at:
-
-```
-http://127.0.0.1:8000/docs      ← Swagger UI
-http://127.0.0.1:8000/redoc     ← ReDoc
-http://127.0.0.1:8000/scalar    ← Scalar (modern API docs)
-```
+> `prediction`: `1` = High Risk, `0` = Low Risk  
+> `probability`: confidence score of the positive class (0.0 – 1.0)
 
 ---
 
-## 🤝 Contributing
+## 🗄️ Database Model
 
-Contributions are welcome! Please follow these steps:
+Table: `financeapp`
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m 'feat: add my feature'`
-4. Push to the branch: `git push origin feature/my-feature`
-5. Open a Pull Request
+| Column | Type | Description |
+|---|---|---|
+| `Id` | int (PK) | Auto-increment primary key |
+| `Income` | float | Annual income |
+| `Age` | int | Applicant age |
+| `Experience` | int | Years of experience |
+| `marital_status` | enum | Married / Single |
+| `House_Ownership` | enum | rented / owned / norent_noown |
+| `Car_Ownership` | varchar | Car ownership status |
+| `Profession` | varchar | Job title |
+| `CITY` | varchar | Current city |
+| `STATE` | varchar | Current state |
+| `CURRENT_JOB_YRS` | int | Years at current job |
+| `CURRENT_HOUSE_YRS` | int | Years at current house |
+| `prediction` | int | ML model output (0 or 1) |
+| `probability` | float | Prediction confidence score |
+| `created_at` | timestamp | Record creation time (UTC) |
+| `updated_at` | timestamp | Last update time (UTC) |
 
 ---
 
-## 📄 License
+## 🤖 ML Model
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+- Loaded at startup via `ModelService`
+- Uses `model.predict()` for binary classification
+- Uses `model.predict_proba()` for probability scores (if supported by the model)
+- Model files stored in `ml_model_package/models/`
 
 ---
 
-<div align="center">
-Made with ❤️ by <a href="https://github.com/mubarakizzat001">Mubarak</a>
-</div>
+## 🔒 Environment Variables
+
+| Variable | Description | Example |
+|---|---|---|
+| `DB_USER` | PostgreSQL username | `app_user` |
+| `DB_PASSWORD` | PostgreSQL password | `secret` |
+| `DB_NAME` | Database name | `ml_api_db` |
+| `DB_HOST` | Database host | `localhost` |
+| `DB_PORT` | Database port | `5432` |
