@@ -17,4 +17,6 @@ class FinanceApp(SQLModel, table=True):
     CURRENT_HOUSE_YRS: int
     prediction: int = Field(default=None)
     Probability: float = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
+    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     
