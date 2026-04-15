@@ -1,7 +1,7 @@
 
 import pandas as pd
-from service.BaseModel import BaseModel
-from api.schemas.FinanceAppSchema import FinanceAppSchema
+from src.service.BaseModel import BaseModel
+from src.api.schemas.FinanceAppSchema import FinanceAppSchema
 
 
 

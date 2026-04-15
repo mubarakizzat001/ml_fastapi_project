@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from service.ModelService import ModelService
+from src.service.ModelService import ModelService
 from scalar_fastapi import get_scalar_api_reference
-from api import FinanceAppSchema
+from src.api import FinanceAppSchema
 
 
 app = FastAPI()
