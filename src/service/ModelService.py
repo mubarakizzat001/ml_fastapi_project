@@ -14,18 +14,18 @@ class ModelService(BaseModel):
         data = app.model_dump()
         df = pd.DataFrame([data])
   
-        pred = model.predict(df)
-        proba = None
+        Prediction = model.predict(df)
+        Probability = None
         if hasattr(model, "predict_proba"):
-            proba = model.predict_proba(df)[:, 1]
+            Probability = model.predict_proba(df)[:, 1]
 
   
-        if proba is not None:
+        if Probability is not None:
             return{
-            "Probability:": float(proba[0]),
-            "Prediction:": int(pred[0])
+            "Probability:": float(Probability[0]),
+            "Prediction:": int(Prediction[0])
                 }
 
         return {
-        "Prediction:": int(pred[0])
+        "Prediction:": int(Prediction[0])
         }
