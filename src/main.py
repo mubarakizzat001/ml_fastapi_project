@@ -1,19 +1,20 @@
+
 from fastapi import FastAPI
-from src.service.ModelService import ModelService
+from contextlib import asynccontextmanager
 from scalar_fastapi import get_scalar_api_reference
-from src.api import FinanceAppSchema
+from database.seesion import create_db_and_tables
 
 
-app = FastAPI()
-model_service = ModelService()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await create_db_and_tables()
+    yield
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the ML Model API!"}
 
-@app.post("/predict")
-def predict(data: FinanceAppSchema):
-    return model_service.predict(data)
+app = FastAPI(lifespan=lifespan)
+
+
+
 
 @app.get("/scalar",include_in_schema=False)
 def scalar_api():

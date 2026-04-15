@@ -3,13 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 from typing import Annotated
 from config import settings
+from database.model import FinanceApp
 
 engine= create_async_engine(settings.database_url, echo=True)
 
 
 async def create_db_and_tables():
     async with engine.begin() as conn:
-        from .models import FinanceApp 
+        FinanceApp
         await conn.run_sync(SQLModel.metadata.create_all)
 
 

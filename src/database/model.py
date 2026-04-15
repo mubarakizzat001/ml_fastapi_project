@@ -1,5 +1,8 @@
+from datetime import datetime
+from time import timezone
+
 from sqlmodel import SQLModel, Field
-from .enum.FinanceAppEnum import maritalstatus , HouseOwnership
+from api import maritalstatus , HouseOwnership
 
 
 class FinanceApp(SQLModel, table=True):
@@ -17,6 +20,5 @@ class FinanceApp(SQLModel, table=True):
     CURRENT_HOUSE_YRS: int
     prediction: int = Field(default=None)
     Probability: float = Field(default=None)
-    created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
-    
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
