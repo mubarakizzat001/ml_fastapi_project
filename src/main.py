@@ -1,4 +1,4 @@
-
+from api import router
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from scalar_fastapi import get_scalar_api_reference
@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
+app.include_router(router)
 
 
 @app.get("/scalar",include_in_schema=False)

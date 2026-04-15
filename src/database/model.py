@@ -1,5 +1,5 @@
 from datetime import datetime
-from time import timezone
+from datetime import timezone
 
 from sqlmodel import SQLModel, Field
 from api import maritalstatus , HouseOwnership
@@ -19,6 +19,6 @@ class FinanceApp(SQLModel, table=True):
     CURRENT_JOB_YRS: int
     CURRENT_HOUSE_YRS: int
     prediction: int = Field(default=None)
-    Probability: float = Field(default=None)
+    probability: float = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

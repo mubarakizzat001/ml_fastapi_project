@@ -1,7 +1,8 @@
 
+from api import FinanceAppRead
 import pandas as pd
-from src.service.BaseModel import BaseModel
-from src.api.schemas.FinanceAppSchema import FinanceAppSchema
+from service.BaseModel import BaseModel
+
 
 
 
@@ -9,7 +10,7 @@ class ModelService(BaseModel):
     def __init__(self):
         super().__init__()
 
-    def predict(self, app: FinanceAppSchema):
+    def predict(self, app: FinanceAppRead):
         model = self.model
         data = app.model_dump()
         df = pd.DataFrame([data])
@@ -22,10 +23,10 @@ class ModelService(BaseModel):
   
         if Probability is not None:
             return{
-            "Probability:": float(Probability[0]),
-            "Prediction:": int(Prediction[0])
+            "probability:": float(Probability[0]),
+            "prediction:": int(Prediction[0])
                 }
 
         return {
-        "Prediction:": int(Prediction[0])
+        "prediction:": int(Prediction[0])
         }

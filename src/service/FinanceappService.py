@@ -1,7 +1,8 @@
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime,timedelta
-from ..api import FinanceAppCreate, FinanceAppRead, FinanceAppUpdate
-from src.database.models import FinanceApp
+from datetime import datetime,timezone
+from api import FinanceAppCreate, FinanceAppRead, FinanceAppUpdate
+from database.model import FinanceApp
 from service.ModelService import ModelService
 
 
@@ -18,8 +19,8 @@ class FinanceAppService:
         serivce= ModelService()
         new_app = FinanceApp(**finance_app_create.model_dump())
         prediction_result = serivce.predict(finance_app_create)
-        new_app.prediction = prediction_result.get("Prediction:")
-        new_app.Probability = prediction_result.get("Probability:")
+        new_app.prediction = prediction_result.get("prediction:")
+        new_app.probability = prediction_result.get("probability:")
         new_app.created_at = datetime.utcnow()
         new_app.updated_at = datetime.utcnow()
 
@@ -32,7 +33,7 @@ class FinanceAppService:
         app_update = await self.get_finance_app(app_id)
         if not app_update:
             return None
-        finance_app= FinanceApp(**finance_app_update.model_dump(exclude_unset=True)))
+        finance_app= FinanceApp(**finance_app_update.model_dump(exclude_unset=True))
         finance_app.updated_at = datetime.utcnow()
         app_update.sqlmodel_update(finance_app)
         await self.session.commit()
@@ -44,5 +45,8 @@ class FinanceAppService:
 
         await self.session.delete(app_delete)
         await self.session.commit()
-        
+    async def get_all_finance_apps(self,limit: int = 100, offset: int = 0)->list[FinanceApp]:
+        result = await self.session.execute(select(FinanceApp).limit(limit).offset(offset))
+        return result.scalars().all()
+    
         
